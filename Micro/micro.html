@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConfianzaMicro - Gestión Financiera</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Estilos personalizados y para la fuente Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            overflow-x: hidden; /* Evita el scroll horizontal */
+            position: relative; /* Necesario para el pseudo-elemento */
+        }
+
+        /* Imagen de fondo con desenfoque sutil */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://elordenmundial.com/wp-content/uploads/2020/07/fondos-soberanos-inversiones-portada-economia-politica-e1593889593887.jpeg'); /* Reemplaza con tu URL */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: blur(1px); /* Ajustado a un desenfoque muy sutil (equivalente a un 5%) */
+            z-index: -1; /* Envía la imagen detrás del contenido */
+            opacity: 0.8; /* Ajusta la opacidad para que el contenido sea legible */
+            animation: fadeIn 1s ease-out forwards; /* Animación de entrada para el fondo */
+        }
+
+        /* Animación general de entrada para los principales contenedores y secciones */
+        .fade-in-slide-up {
+            animation: fadeInSlideUp 0.7s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeInSlideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Animación para modales */
+        .modal-enter {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        .modal-leave {
+            animation: fadeOut 0.3s ease-in forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.95); }
+        }
+
+        /* Animación para tarjetas y filas de tabla */
+        .card-enter {
+            animation: fadeInSlideUp 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .nav-button.active {
+            background-color: #1d4ed8;
+            color: white;
+        }
+        /* Ocultar scrollbar en el contenido principal */
+        main::-webkit-scrollbar {
+            display: none;
+        }
+        main {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .error-message {
+            color: #ef4444; /* text-red-500 */
+            font-size: 0.875rem; /* text-sm */
+            height: 1rem; /* Aproximadamente h-4 para evitar saltos de layout */
+        }
+
+        /* Estilos para botones con animaciones de hover */
+        .animated-button {
+            transition: all 0.2s ease-in-out;
+        }
+        .animated-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* --- Estilos para iconos --- */
+        [class*="-icon"]::before,
+        .button-icon::before {
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-right: 8px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .add-button .button-icon::before { content: "\2b"; }
+        .save-button .button-icon::before { content: "\f0c7"; }
+        .edit-button .button-icon::before { content: "\f044"; }
+        .delete-button .button-icon::before { content: "\f2ed"; color: #ef4444; }
+        .search-button .button-icon::before { content: "\f002"; }
+
+        .nav-link.home-icon::before { content: "\f015"; }
+        .nav-link.profile-icon::before { content: "\f007"; }
+        .nav-link.settings-icon::before { content: "\f013"; }
+        .back-link.arrow-icon::before { content: "\f060"; }
+
+        .list-item.checked-icon::before { content: "\f058"; color: #22c55e; }
+        .list-item.unchecked-icon::before { content: "\f111"; color: #9ca3af; }
+        .info-box.info-icon::before { content: "\f05a"; color: #3b82f6; }
+        .warning-box.warning-icon::before { content: "\f071"; color: #f59e0b; }
+        .error-box.error-icon::before { content: "\f06a"; color: #ef4444; }
+
+        /* --- Estilos para imágenes de fondo para partes estéticas --- */
+        .header-section {
+            background-image: url('https://placehold.co/1200x300/60A5FA/FFFFFF?text=Encabezado+Principal');
+            background-size: cover;
+            background-position: center;
+            padding: 40px 20px;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .featured-card {
+            background-image: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), url('https://placehold.co/600x400/D1D5DB/FFFFFF?text=Fondo+de+Tarjeta');
+            background-size: cover;
+            background-position: center;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Contenedor principal de la aplicación (oculto por defecto) -->
+    <div id="app" class="flex h-screen bg-gray-200 hidden fade-in-slide-up">
+
+        <!-- Barra de Navegación Lateral (Sidebar) -->
+        <aside id="sidebar" class="w-64 bg-gray-800 text-white p-5 flex-col justify-between hidden md:flex">
+            <div>
+                <h1 class="text-2xl font-bold mb-8 text-center">Confianza<span class="text-blue-400">Micro</span></h1>
+                <nav id="main-nav" class="space-y-2">
+                    <button data-section="dashboard" class="nav-button w-full text-left py-2.5 px-4 rounded-lg transition duration-200 hover:bg-blue-600 active animated-button"><i class="fas fa-tachometer-alt w-6 mr-2"></i>Dashboard</button>
+                    <button data-section="clients" class="nav-button w-full text-left py-2.5 px-4 rounded-lg transition duration-200 hover:bg-blue-600 animated-button"><i class="fas fa-users w-6 mr-2"></i>Clientes</button>
+                    <button data-section="credits" class="nav-button w-full text-left py-2.5 px-4 rounded-lg transition duration-200 hover:bg-blue-600 animated-button"><i class="fas fa-hand-holding-dollar w-6 mr-2"></i>Créditos</button>
+                    <button data-section="agencies" class="nav-button w-full text-left py-2.5 px-4 rounded-lg transition duration-200 hover:bg-blue-600 animated-button"><i class="fas fa-building-columns w-6 mr-2"></i>Agencias</button>
+                    <button data-section="analysts" class="nav-button w-full text-left py-2.5 px-4 rounded-lg transition duration-200 hover:bg-blue-600 animated-button"><i class="fas fa-user-tie w-6 mr-2"></i>Analistas</button>
+                </nav>
+            </div>
+            <div>
+                <div id="user-info" class="text-center mb-4 text-sm break-all"></div>
+                <button id="logout-button" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 animated-button">
+                    <i class="fas fa-sign-out-alt w-6 mr-2"></i>Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+
+        <!-- Contenido Principal -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <div class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-8">
+                <div id="content-area">
+                    <!-- El contenido de las secciones se cargará aquí -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Pantalla de Login (visible por defecto) -->
+    <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4 bg-black bg-opacity-50 fade-in-slide-up">
+        <!-- Contenedor de Login -->
+        <div id="login-container" class="bg-white w-full max-w-md p-8 rounded-2xl shadow-lg fade-in-slide-up">
+            <h1 class="text-3xl font-bold mb-2 text-center text-gray-800">Confianza<span class="text-blue-600">Micro</span></h1>
+            <p class="text-center text-gray-500 mb-8">Inicia sesión para continuar</p>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="login-email" class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
+                    <input type="email" id="login-email" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="login-password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+                    <input type="password" id="login-password" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-lg transition duration-200 animated-button">Ingresar</button>
+            </form>
+            <p id="login-error" class="text-red-500 text-sm mt-2 text-center h-4"></p>
+            <p class="text-center text-sm text-gray-600 mt-4">
+                ¿No tienes una cuenta? <a href="#" id="show-register" class="font-medium text-blue-600 hover:underline">Regístrate</a>
+            </p>
+        </div>
+        <!-- Contenedor de Registro (oculto) -->
+        <div id="register-container" class="bg-white w-full max-w-md p-8 rounded-2xl shadow-lg hidden fade-in-slide-up">
+            <h2 class="text-3xl font-bold mb-8 text-center text-gray-800">Crear Cuenta</h2>
+            <form id="register-form" class="space-y-4">
+                <div>
+                    <label for="register-email" class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
+                    <input type="email" id="register-email" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="register-password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+                    <input type="password" id="register-password" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-lg transition duration-200 animated-button">Registrar</button>
+            </form>
+            <p id="register-error" class="text-red-500 text-sm mt-2 text-center h-4"></p>
+            <p class="text-center text-sm text-gray-600 mt-4">
+                ¿Ya tienes una cuenta? <a href="#" id="show-login" class="font-medium text-blue-600 hover:underline">Inicia Sesión</a>
+            </p>
+        </div>
+    </div>
+
+
+    <!-- Modal Genérico para formularios -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-40">
+        <div id="modal-content" class="bg-white rounded-lg shadow-xl w-full max-w-2xl modal-enter overflow-y-auto max-h-[90vh]">
+            <!-- Contenido del modal se inyectará aquí -->
+        </div>
+    </div>
+    
+    <!-- Modal de Confirmación para eliminar -->
+    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-sm p-6 modal-enter">
+            <h3 id="confirm-title" class="text-lg font-bold text-gray-900">Confirmar Acción</h3>
+            <p id="confirm-message" class="mt-2 text-sm text-gray-600">¿Estás seguro?</p>
+            <div class="mt-6 flex justify-end space-x-3">
+                <button id="confirm-cancel-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg animated-button">Cancelar</button>
+                <button id="confirm-ok-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg animated-button">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Importa las funciones que necesitas de los SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // =================================================================================
+        // CONFIGURACIÓN DE FIREBASE (PROPORCIONADA POR EL USUARIO)
+        // =================================================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDbVIwdHaT4-6Lfi1FOYjWVobWLiPUzMrw",
+            authDomain: "micro-75d3d.firebaseapp.com",
+            projectId: "micro-75d3d",
+            storageBucket: "micro-75d3d.appspot.com",
+            messagingSenderId: "919483509465",
+            appId: "1:919483509465:web:f4d1f27bcc069ac3ffacc8"
+        };
+
+        // Inicializa Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Referencias a elementos del DOM
+        const appContainer = document.getElementById('app');
+        const authScreen = document.getElementById('auth-screen');
+        const loginContainer = document.getElementById('login-container');
+        const registerContainer = document.getElementById('register-container');
+        const contentArea = document.getElementById('content-area');
+        const mainNav = document.getElementById('main-nav');
+        const userInfo = document.getElementById('user-info');
+        const confirmModal = document.getElementById('confirm-modal');
+
+        let currentSection = 'dashboard';
+        let unsubscribeListeners = []; // Para guardar los listeners de onSnapshot
+
+        // =================================================================================
+        // UTILIDADES
+        // =================================================================================
+        function showConfirmationModal(title, message, onConfirm) {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = message;
+            confirmModal.classList.remove('hidden');
+
+            const confirmOkBtn = document.getElementById('confirm-ok-btn');
+            const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+
+            const handleConfirm = () => {
+                onConfirm();
+                hide();
+            };
+            const hide = () => {
+                confirmModal.classList.add('hidden');
+                confirmOkBtn.removeEventListener('click', handleConfirm);
+                confirmCancelBtn.removeEventListener('click', hide);
+            };
+
+            confirmOkBtn.addEventListener('click', handleConfirm);
+            confirmCancelBtn.addEventListener('click', hide);
+        }
+
+        // =================================================================================
+        // GESTIÓN DE AUTENTICACIÓN
+        // =================================================================================
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                authScreen.classList.add('hidden');
+                appContainer.classList.remove('hidden');
+                appContainer.classList.add('flex');
+                userInfo.textContent = user.email;
+                loadSection(currentSection);
+            } else {
+                appContainer.classList.add('hidden');
+                appContainer.classList.remove('flex');
+                authScreen.classList.remove('hidden');
+                loginContainer.classList.remove('hidden');
+                registerContainer.classList.add('hidden');
+                unsubscribeAll();
+                contentArea.innerHTML = '';
+            }
+        });
+
+        document.getElementById('login-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorP = document.getElementById('login-error');
+            try {
+                errorP.textContent = '';
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                errorP.textContent = "Correo o contraseña incorrectos.";
+            }
+        });
+        
+        document.getElementById('register-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const errorP = document.getElementById('register-error');
+            try {
+                errorP.textContent = '';
+                await createUserWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                errorP.textContent = "Error al registrar: " + error.message;
+            }
+        });
+
+        document.getElementById('show-register').addEventListener('click', (e) => {
+            e.preventDefault();
+            loginContainer.classList.add('hidden');
+            registerContainer.classList.remove('hidden');
+        });
+
+        document.getElementById('show-login').addEventListener('click', (e) => {
+            e.preventDefault();
+            registerContainer.classList.add('hidden');
+            loginContainer.classList.remove('hidden');
+        });
+
+        document.getElementById('logout-button').addEventListener('click', () => signOut(auth));
+        
+        // =================================================================================
+        // NAVEGACIÓN Y CARGA DE SECCIONES
+        // =================================================================================
+        mainNav.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
+                const button = e.target.closest('button');
+                const section = button.dataset.section;
+                if(section && section !== currentSection) loadSection(section);
+            }
+        });
+        
+        function updateActiveNavButton(section) {
+             currentSection = section;
+             document.querySelectorAll('.nav-button').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.section === section) btn.classList.add('active');
+            });
+        }
+        
+        function unsubscribeAll() {
+            unsubscribeListeners.forEach(unsub => unsub());
+            unsubscribeListeners = [];
+        }
+
+        function loadSection(section) {
+            unsubscribeAll();
+            updateActiveNavButton(section);
+            contentArea.innerHTML = `<div class="text-center text-gray-500">Cargando...</div>`;
+
+            const sectionLoaders = {
+                dashboard: loadDashboard,
+                clients: loadClients,
+                credits: loadCredits,
+                agencies: loadAgencies,
+                analysts: loadAnalysts,
+            };
+            
+            sectionLoaders[section]();
+        }
+
+        // =================================================================================
+        // SECCIÓN: DASHBOARD
+        // =================================================================================
+        function loadDashboard() {
+            contentArea.innerHTML = `
+                <h2 class="text-3xl font-bold mb-6 text-gray-800">Dashboard</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 fade-in-slide-up">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-gray-500 text-sm font-medium">Total Clientes</h3>
+                        <p id="total-clients" class="text-3xl font-bold text-blue-600">...</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-gray-500 text-sm font-medium">Total Créditos Activos</h3>
+                        <p id="total-credits" class="text-3xl font-bold text-green-600">...</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-gray-500 text-sm font-medium">Monto Total Desembolsado</h3>
+                        <p id="total-disbursed" class="text-3xl font-bold text-yellow-600">S/ ...</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-gray-500 text-sm font-medium">Total Agencias</h3>
+                        <p id="total-agencies" class="text-3xl font-bold text-purple-600">...</p>
+                    </div>
+                </div>
+            `;
+            const unsubClients = onSnapshot(collection(db, "clients"), snap => document.getElementById('total-clients').textContent = snap.size);
+            const unsubAgencies = onSnapshot(collection(db, "agencies"), snap => document.getElementById('total-agencies').textContent = snap.size);
+            const unsubCredits = onSnapshot(collection(db, "credits"), snap => {
+                document.getElementById('total-credits').textContent = snap.size;
+                let totalDisbursed = 0;
+                snap.forEach(doc => totalDisbursed += parseFloat(doc.data().monto_desembolsado || 0));
+                document.getElementById('total-disbursed').textContent = `S/ ${totalDisbursed.toFixed(2)}`;
+            });
+            unsubscribeListeners.push(unsubClients, unsubAgencies, unsubCredits);
+        }
+
+        // =================================================================================
+        // SECCIÓN: CLIENTES (CRUD completo)
+        // =================================================================================
+        function loadClients() {
+            contentArea.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800">Gestión de Clientes</h2>
+                    <button id="add-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg animated-button"><i class="fas fa-plus mr-2"></i>Añadir Cliente</button>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow"><div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr>
+                            <th scope="col" class="px-6 py-3">DNI</th><th scope="col" class="px-6 py-3">Nombre Completo</th>
+                            <th scope="col" class="px-6 py-3">Teléfono</th><th scope="col" class="px-6 py-3">Dirección</th>
+                            <th scope="col" class="px-6 py-3 text-right">Acciones</th>
+                        </tr></thead>
+                        <tbody id="data-table-body"></tbody>
+                    </table>
+                </div></div>`;
+            
+            const unsub = onSnapshot(collection(db, "clients"), (snapshot) => {
+                const tableBody = document.getElementById('data-table-body');
+                tableBody.innerHTML = '';
+                snapshot.forEach((doc, index) => {
+                    const client = doc.data();
+                    const row = document.createElement('tr');
+                    row.className = 'bg-white border-b hover:bg-gray-50 card-enter';
+                    row.style.animationDelay = `${index * 50}ms`; // Stagger animation
+                    row.innerHTML = `
+                        <td class="px-6 py-4 font-medium text-gray-900">${client.dni}</td><td class="px-6 py-4">${client.nombre_completo}</td>
+                        <td class="px-6 py-4">${client.telefono}</td><td class="px-6 py-4">${client.direccion}</td>
+                        <td class="px-6 py-4 text-right">
+                            <button class="edit-btn text-blue-600 hover:text-blue-900 mr-2 animated-button" data-id="${doc.id}"><i class="fas fa-pencil-alt"></i></button>
+                            <button class="delete-btn text-red-600 hover:text-red-900 animated-button" data-id="${doc.id}"><i class="fas fa-trash-alt"></i></button>
+                        </td>`;
+                    tableBody.appendChild(row);
+                });
+            });
+            unsubscribeListeners.push(unsub);
+            
+            document.getElementById('add-btn').addEventListener('click', () => openClientModal());
+            contentArea.addEventListener('click', (e) => handleGenericActions(e, 'clients', openClientModal, 'cliente'));
+        }
+
+        function openClientModal(clientId = null) {
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modal-content');
+            const action = clientId ? 'Editar' : 'Añadir';
+            modalContent.innerHTML = `
+                <div class="p-6"><h3 class="text-xl font-semibold mb-4">${action} Cliente</h3>
+                <form id="data-form" class="space-y-4">
+                    <input type="hidden" id="entity-id" value="${clientId || ''}">
+                    <div><label for="client-dni">DNI</label><input type="text" id="client-dni" maxlength="8" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"></div>
+                    <div><label for="client-name">Nombre Completo</label><input type="text" id="client-name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"></div>
+                    <div><label for="client-phone">Teléfono</label><input type="text" id="client-phone" maxlength="9" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"></div>
+                    <div><label for="client-address">Dirección</label><input type="text" id="client-address" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"></div>
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" class="modal-cancel bg-gray-200 hover:bg-gray-300 py-2 px-4 rounded-lg animated-button">Cancelar</button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg animated-button">${action}</button>
+                    </div>
+                </form></div>`;
+            modal.classList.remove('hidden');
+
+            if (clientId) {
+                getDoc(doc(db, "clients", clientId)).then(docSnap => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        document.getElementById('client-dni').value = data.dni;
+                        document.getElementById('client-name').value = data.nombre_completo;
+                        document.getElementById('client-phone').value = data.telefono;
+                        document.getElementById('client-address').value = data.direccion;
+                    }
+                });
+            }
+            document.querySelector('.modal-cancel').addEventListener('click', () => modal.classList.add('hidden'));
+            document.getElementById('data-form').addEventListener('submit', (e) => saveClient(e));
+        }
+
+        async function saveClient(e) {
+            e.preventDefault();
+            const id = document.getElementById('entity-id').value;
+            const data = {
+                dni: document.getElementById('client-dni').value,
+                nombre_completo: document.getElementById('client-name').value,
+                telefono: document.getElementById('client-phone').value,
+                direccion: document.getElementById('client-address').value
+            };
+            await saveGeneric('clients', data, id);
+        }
+
+        // =================================================================================
+        // SECCIÓN: CREDITOS (Con Plan de Pagos)
+        // =================================================================================
+        function loadCredits() {
+            contentArea.innerHTML = `
+                <div class="flex justify-between items-center mb-6"><h2 class="text-3xl font-bold">Gestión de Créditos</h2>
+                <button id="add-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg animated-button"><i class="fas fa-plus mr-2"></i>Nuevo Crédito</button></div>
+                <div class="bg-white p-4 rounded-lg shadow"><div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500"><thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr>
+                        <th scope="col" class="px-6 py-3">Nro. Crédito</th><th scope="col" class="px-6 py-3">Cliente</th>
+                        <th scope="col" class="px-6 py-3">Monto</th><th scope="col" class="px-6 py-3">Fecha</th><th scope="col" class="px-6 py-3">Plazo</th>
+                        <th scope="col" class="px-6 py-3 text-right">Acciones</th>
+                    </tr></thead><tbody id="data-table-body"></tbody></table>
+                </div></div>`;
+            
+            const unsub = onSnapshot(collection(db, "credits"), async (snapshot) => {
+                const tableBody = document.getElementById('data-table-body');
+                tableBody.innerHTML = '';
+                for (const creditDoc of snapshot.docs) {
+                    const credit = creditDoc.data();
+                    let clientName = '...';
+                    if (credit.id_cliente) {
+                        const clientSnap = await getDoc(doc(db, "clients", credit.id_cliente));
+                        if (clientSnap.exists()) clientName = clientSnap.data().nombre_completo;
+                    }
+                    const row = document.createElement('tr');
+                    row.className = 'bg-white border-b hover:bg-gray-50 card-enter';
+                    row.innerHTML = `
+                        <td class="px-6 py-4 font-medium text-gray-900">${credit.nro_credito}</td><td class="px-6 py-4">${clientName}</td>
+                        <td class="px-6 py-4">S/ ${parseFloat(credit.monto_aprobado).toFixed(2)}</td><td class="px-6 py-4">${credit.fecha_desembolso}</td>
+                        <td class="px-6 py-4">${credit.plazo_meses} meses</td>
+                        <td class="px-6 py-4 text-right">
+                           <button class="view-btn text-green-600 hover:text-green-900 animated-button" data-id="${creditDoc.id}"><i class="fas fa-eye"></i> Ver Plan</button>
+                        </td>`;
+                    tableBody.appendChild(row);
+                }
+            });
+            unsubscribeListeners.push(unsub);
+
+            document.getElementById('add-btn').addEventListener('click', openCreditModal);
+            contentArea.addEventListener('click', e => {
+                const target = e.target.closest('button.view-btn');
+                if (target) viewCreditPlan(target.dataset.id);
+            });
+        }
+        
+        async function openCreditModal() {
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modal-content');
+
+            const [clientsSnap, analystsSnap] = await Promise.all([
+                getDocs(collection(db, "clients")),
+                getDocs(collection(db, "analistas_credito"))
+            ]);
+            const clientsOpts = clientsSnap.docs.map(d => `<option value="${d.id}">${d.data().nombre_completo}</option>`).join('');
+            const analystsOpts = analystsSnap.docs.map(d => `<option value="${d.id}">${d.data().nombre_completo}</option>`).join('');
+
+            modalContent.innerHTML = `
+                <div class="p-6"><h3 class="text-xl font-semibold mb-4">Nuevo Crédito</h3>
+                <form id="data-form" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label>Nro. Crédito</label><input id="nro_credito" required class="input-style"></div>
+                        <div><label>Cliente</label><select id="id_cliente" required class="input-style"><option value="">Seleccionar</option>${clientsOpts}</select></div>
+                        <div><label>Analista</label><select id="id_analista" required class="input-style"><option value="">Seleccionar</option>${analystsOpts}</select></div>
+                        <div><label>Fecha Desembolso</label><input id="fecha_desembolso" type="date" required class="input-style"></div>
+                        <div><label>Monto Aprobado (S/)</label><input id="monto_aprobado" type="number" step="0.01" required class="input-style"></div>
+                        <div><label>TEA (%)</label><input id="tea" type="number" step="0.01" value="35.00" required class="input-style"></div>
+                        <div><label>Plazo (meses)</label><input id="plazo_meses" type="number" required class="input-style"></div>
+                        <div><label>Seguro Desgravamen (S/)</label><input id="seguro" type="number" step="0.01" value="5.00" required class="input-style"></div>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" class="modal-cancel bg-gray-200 hover:bg-gray-300 py-2 px-4 rounded-lg animated-button">Cancelar</button>
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg animated-button">Guardar Crédito</button>
+                    </div>
+                </form></div>`.replaceAll('class="input-style"', 'class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"');
+            
+            modal.classList.remove('hidden');
+            document.querySelector('.modal-cancel').addEventListener('click', () => modal.classList.add('hidden'));
+            document.getElementById('data-form').addEventListener('submit', saveCredit);
+        }
+
+        async function saveCredit(e) {
+            e.preventDefault();
+            const form = e.target;
+            const monto = parseFloat(form.monto_aprobado.value);
+            const tea = parseFloat(form.tea.value) / 100;
+            const plazo = parseInt(form.plazo_meses.value);
+            const seguro = parseFloat(form.seguro.value);
+
+            // Calculos financieros
+            const tem = Math.pow(1 + tea, 1/12) - 1; // Tasa Efectiva Mensual
+            const cuotaSinSeguro = monto * (tem * Math.pow(1 + tem, plazo)) / (Math.pow(1 + tem, plazo) - 1);
+            const cuotaMensual = cuotaSinSeguro + seguro;
+            const totalPagar = cuotaMensual * plazo;
+
+            const creditData = {
+                nro_credito: form.nro_credito.value,
+                id_cliente: form.id_cliente.value,
+                id_analista: form.id_analista.value,
+                monto_aprobado: monto,
+                monto_desembolsado: monto,
+                tea: tea * 100,
+                tcea: 0, // TCEA requiere un cálculo más complejo (flujo de caja)
+                plazo_meses: plazo,
+                cuota_mensual: cuotaMensual,
+                total_a_pagar: totalPagar,
+                fecha_desembolso: form.fecha_desembolso.value
+            };
+
+            try {
+                const creditRef = await addDoc(collection(db, "credits"), creditData);
+                
+                // Generar plan de pagos
+                const batch = writeBatch(db);
+                let saldoCapital = monto;
+                for (let i = 1; i <= plazo; i++) {
+                    const interesCuota = saldoCapital * tem;
+                    const capitalCuota = cuotaSinSeguro - interesCuota;
+                    saldoCapital -= capitalCuota;
+                    
+                    const fechaPago = new Date(form.fecha_desembolso.value);
+                    fechaPago.setMonth(fechaPago.getMonth() + i);
+
+                    const planPagoDoc = doc(collection(db, `credits/${creditRef.id}/plan_pagos`));
+                    batch.set(planPagoDoc, {
+                        nro_cuota: i,
+                        fecha_pago: fechaPago.toISOString().split('T')[0],
+                        capital: capitalCuota,
+                        interes: interesCuota,
+                        seguro: seguro,
+                        total_cuota: cuotaMensual,
+                        estado_pago: 'Pendiente'
+                    });
+                }
+                await batch.commit();
+                document.getElementById('modal').classList.add('hidden');
+
+            } catch(error) {
+                console.error("Error al guardar crédito:", error);
+                alert("Error al guardar el crédito.");
+            }
+        }
+
+        async function viewCreditPlan(creditId) {
+             const modal = document.getElementById('modal');
+             const modalContent = document.getElementById('modal-content');
+             modalContent.innerHTML = `<div class="p-6">Cargando...</div>`;
+             modal.classList.remove('hidden');
+
+             const creditSnap = await getDoc(doc(db, "credits", creditId));
+             const planSnap = await getDocs(collection(db, `credits/${creditId}/plan_pagos`));
+             
+             const credit = creditSnap.data();
+             let planRows = '';
+             planSnap.docs.sort((a,b) => a.data().nro_cuota - b.data().nro_cuota).forEach(p => {
+                 const pago = p.data();
+                 const isPaid = pago.estado_pago === 'Pagado';
+                 planRows += `<tr class="${isPaid ? 'bg-green-50' : 'bg-white'} border-b card-enter">
+                    <td class="px-3 py-2 text-center">${pago.nro_cuota}</td>
+                    <td class="px-3 py-2">${pago.fecha_pago}</td>
+                    <td class="px-3 py-2 text-right">S/ ${pago.capital.toFixed(2)}</td>
+                    <td class="px-3 py-2 text-right">S/ ${pago.interes.toFixed(2)}</td>
+                    <td class="px-3 py-2 text-right">S/ ${pago.seguro.toFixed(2)}</td>
+                    <td class="px-3 py-2 text-right font-bold">S/ ${pago.total_cuota.toFixed(2)}</td>
+                    <td class="px-3 py-2 text-center"><span class="px-2 py-1 text-xs rounded-full ${isPaid ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'}">${pago.estado_pago}</span></td>
+                    <td class="px-3 py-2 text-center">${isPaid ? '<i class="fas fa-check-circle text-green-500"></i>' : `<button class="pay-btn text-xs bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded animated-button" data-credit-id="${creditId}" data-payment-id="${p.id}" data-cuota='${JSON.stringify(pago)}'>Pagar</button>`}</td>
+                 </tr>`;
+             });
+
+             modalContent.innerHTML = `
+                <div class="p-6"><h3 class="text-xl font-semibold mb-4">Plan de Pagos: ${credit.nro_credito}</h3>
+                <h4 class="text-md font-medium mb-4">Monto: S/ ${credit.monto_aprobado.toFixed(2)} - Cuota: S/ ${credit.cuota_mensual.toFixed(2)}</h4>
+                <div class="overflow-y-auto max-h-96"><table class="w-full text-sm">
+                    <thead class="bg-gray-50 sticky top-0"><tr>
+                        <th class="px-3 py-2">Cuota</th><th class="px-3 py-2">Fecha</th><th class="px-3 py-2">Capital</th>
+                        <th class="px-3 py-2">Interés</th><th class="px-3 py-2">Seguro</th><th class="px-3 py-2">Total</th>
+                        <th class="px-3 py-2">Estado</th><th class="px-3 py-2">Acción</th>
+                    </tr></thead><tbody>${planRows}</tbody>
+                </table></div>
+                <div class="flex justify-end pt-4"><button type="button" class="modal-cancel bg-gray-200 hover:bg-gray-300 py-2 px-4 rounded-lg animated-button">Cerrar</button></div>
+                </div>`;
+            
+            modalContent.querySelector('.modal-cancel').addEventListener('click', () => modal.classList.add('hidden'));
+            modalContent.addEventListener('click', e => {
+                const target = e.target.closest('button.pay-btn');
+                if (target) {
+                    const { creditId, paymentId, cuota } = target.dataset;
+                    const cuotaData = JSON.parse(cuota);
+                    showConfirmationModal('Confirmar Pago', `¿Registrar el pago de S/ ${cuotaData.total_cuota.toFixed(2)} para la cuota #${cuotaData.nro_cuota}?`,
+                    () => registerPayment(creditId, paymentId, cuotaData));
+                }
+            });
+        }
+
+        async function registerPayment(creditId, paymentId, cuotaData) {
+            const batch = writeBatch(db);
+            // 1. Actualizar estado de la cuota en el plan de pagos
+            const planPagoRef = doc(db, `credits/${creditId}/plan_pagos`, paymentId);
+            batch.update(planPagoRef, { estado_pago: 'Pagado' });
+            
+            // 2. Crear registro en pagos_realizados
+            const pagoRealizadoRef = doc(collection(db, "pagos_realizados"));
+            batch.set(pagoRealizadoRef, {
+                id_credito: creditId,
+                nro_cuota: cuotaData.nro_cuota,
+                fecha_pago: new Date().toISOString().split('T')[0],
+                capital_pagado: cuotaData.capital,
+                interes_pagado: cuotaData.interes,
+                seguro_pagado: cuotaData.seguro,
+                total_pagado: cuotaData.total_cuota,
+                medio_pago: 'Ventanilla', // Placeholder
+                id_ventanilla: null // Placeholder
+            });
+
+            try {
+                await batch.commit();
+                viewCreditPlan(creditId); // Recargar vista del plan
+            } catch(error) {
+                console.error("Error registrando pago:", error);
+                alert("Error al registrar el pago.");
+            }
+        }
+        
+        // =================================================================================
+        // SECCIÓN: AGENCIAS (CRUD completo con validaciones y animaciones)
+        // =================================================================================
+        function loadAgencies() {
+            contentArea.innerHTML = `
+                <div class="flex justify-between items-center mb-6"><h2 class="text-3xl font-bold text-gray-800">Gestión de Agencias</h2>
+                <button id="add-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg animated-button"><i class="fas fa-plus mr-2"></i>Añadir Agencia</button></div>
+                <div id="data-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>`;
+            
+            const unsub = onSnapshot(collection(db, "agencies"), (snapshot) => {
+                const list = document.getElementById('data-list');
+                list.innerHTML = '';
+                snapshot.docs.forEach((doc, index) => {
+                    const agency = doc.data();
+                    const card = document.createElement('div');
+                    card.className = 'bg-white p-6 rounded-lg shadow relative card-enter';
+                    card.style.animationDelay = `${index * 100}ms`; // Retraso escalonado para la animación
+                    card.innerHTML = `
+                        <div class="absolute top-2 right-2">
+                            <button class="edit-btn text-blue-600 hover:text-blue-900 mr-2 animated-button" data-id="${doc.id}"><i class="fas fa-pencil-alt"></i></button>
+                            <button class="delete-btn text-red-600 hover:text-red-900 animated-button" data-id="${doc.id}"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                        <h3 class="font-bold text-lg text-gray-800 pr-12">${agency.nombre_agencia}</h3>
+                        <p class="text-gray-600">${agency.direccion}</p>
+                        <p class="text-gray-500 text-sm">${agency.distrito}, ${agency.provincia}</p>
+                        <p class="text-gray-500 text-sm mt-2"><i class="fas fa-phone mr-2"></i>${agency.telefono}</p>`;
+                    list.appendChild(card);
+                });
+            });
+            unsubscribeListeners.push(unsub);
+            document.getElementById('add-btn').addEventListener('click', () => openAgencyModal());
+            contentArea.addEventListener('click', (e) => handleGenericActions(e, 'agencies', openAgencyModal, 'agencia'));
+        }
+
+        function openAgencyModal(agencyId = null) {
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modal-content');
+            const action = agencyId ? 'Editar' : 'Añadir';
+            modalContent.innerHTML = `
+                <div class="p-6"><h3 class="text-xl font-semibold mb-4">${action} Agencia</h3>
+                <form id="data-form" class="space-y-2" novalidate>
+                    <input type="hidden" id="entity-id" value="${agencyId || ''}">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
+                        <div>
+                            <label for="nombre_agencia">Nombre Agencia</label>
+                            <input id="nombre_agencia" required class="input-style">
+                            <span id="error-nombre_agencia" class="error-message"></span>
+                        </div>
+                        <div>
+                            <label for="telefono">Teléfono</label>
+                            <input id="telefono" required maxlength="9" class="input-style">
+                            <span id="error-telefono" class="error-message"></span>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="direccion">Dirección</label>
+                            <input id="direccion" required class="input-style">
+                            <span id="error-direccion" class="error-message"></span>
+                        </div>
+                        <div>
+                            <label for="distrito">Distrito</label>
+                            <input id="distrito" required class="input-style">
+                            <span id="error-distrito" class="error-message"></span>
+                        </div>
+                        <div>
+                            <label for="provincia">Provincia</label>
+                            <input id="provincia" required class="input-style">
+                            <span id="error-provincia" class="error-message"></span>
+                        </div>
+                         <div>
+                            <label for="departamento">Departamento</label>
+                            <input id="departamento" required class="input-style">
+                            <span id="error-departamento" class="error-message"></span>
+                        </div>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" class="modal-cancel bg-gray-200 hover:bg-gray-300 py-2 px-4 rounded-lg animated-button">Cancelar</button>
+                        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg animated-button">${action}</button>
+                    </div>
+                </form></div>`.replaceAll('class="input-style"', 'class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"');
+            
+            modal.classList.remove('hidden');
+
+            if (agencyId) {
+                getDoc(doc(db, "agencies", agencyId)).then(docSnap => {
+                    if (docSnap.exists()) {
+                        const d = docSnap.data();
+                        document.getElementById('nombre_agencia').value = d.nombre_agencia || '';
+                        document.getElementById('telefono').value = d.telefono || '';
+                        document.getElementById('direccion').value = d.direccion || '';
+                        document.getElementById('distrito').value = d.distrito || '';
+                        document.getElementById('provincia').value = d.provincia || '';
+                        document.getElementById('departamento').value = d.departamento || '';
+                    }
+                });
+            }
+            document.querySelector('.modal-cancel').addEventListener('click', () => modal.classList.add('hidden'));
+            document.getElementById('data-form').addEventListener('submit', (e) => saveAgency(e));
+        }
+
+        async function saveAgency(e) {
+            e.preventDefault();
+            
+            // Lógica de validación
+            let isValid = true;
+            const fields = ['nombre_agencia', 'telefono', 'direccion', 'distrito', 'provincia', 'departamento'];
+            fields.forEach(id => {
+                const input = document.getElementById(id);
+                const errorSpan = document.getElementById(`error-${id}`);
+                errorSpan.textContent = '';
+                if (!input.value.trim()) {
+                    errorSpan.textContent = 'Este campo es obligatorio.';
+                    isValid = false;
+                }
+            });
+
+            const phoneInput = document.getElementById('telefono');
+            const phoneError = document.getElementById('error-telefono');
+            if (phoneInput.value && !/^\d{9}$/.test(phoneInput.value)) {
+                 phoneError.textContent = 'Debe ser un número de 9 dígitos.';
+                 isValid = false;
+            }
+            
+            if (!isValid) return; // Detener si hay errores
+
+            const id = document.getElementById('entity-id').value;
+            const data = {
+                nombre_agencia: document.getElementById('nombre_agencia').value,
+                telefono: document.getElementById('telefono').value,
+                direccion: document.getElementById('direccion').value,
+                distrito: document.getElementById('distrito').value,
+                provincia: document.getElementById('provincia').value,
+                departamento: document.getElementById('departamento').value,
+            };
+            await saveGeneric('agencies', data, id);
+        }
+        
+        // =================================================================================
+        // SECCIÓN: ANALISTAS (CRUD completo)
+        // =================================================================================
+        function loadAnalysts() {
+            contentArea.innerHTML = `
+                <div class="flex justify-between items-center mb-6"><h2 class="text-3xl font-bold">Gestión de Analistas</h2>
+                <button id="add-btn" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-lg animated-button"><i class="fas fa-plus mr-2"></i>Añadir Analista</button></div>
+                <div class="bg-white p-4 rounded-lg shadow"><div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500"><thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr>
+                        <th scope="col" class="px-6 py-3">Nombre Completo</th><th scope="col" class="px-6 py-3">Correo</th>
+                        <th scope="col" class="px-6 py-3">Teléfono</th><th scope="col" class="px-6 py-3 text-right">Acciones</th>
+                    </tr></thead><tbody id="data-table-body"></tbody></table>
+                </div></div>`;
+
+            const unsub = onSnapshot(collection(db, "analistas_credito"), (snapshot) => {
+                const tableBody = document.getElementById('data-table-body');
+                tableBody.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const analyst = doc.data();
+                    const row = document.createElement('tr');
+                    row.className = 'bg-white border-b hover:bg-gray-50 card-enter';
+                    row.innerHTML = `
+                        <td class="px-6 py-4 font-medium text-gray-900">${analyst.nombre_completo}</td>
+                        <td class="px-6 py-4">${analyst.correo}</td><td class="px-6 py-4">${analyst.telefono}</td>
+                        <td class="px-6 py-4 text-right">
+                            <button class="edit-btn text-blue-600 hover:text-blue-900 mr-2 animated-button" data-id="${doc.id}"><i class="fas fa-pencil-alt"></i></button>
+                            <button class="delete-btn text-red-600 hover:text-red-900 animated-button" data-id="${doc.id}"><i class="fas fa-trash-alt"></i></button>
+                        </td>`;
+                    tableBody.appendChild(row);
+                });
+            });
+            unsubscribeListeners.push(unsub);
+            document.getElementById('add-btn').addEventListener('click', () => openAnalystModal());
+            contentArea.addEventListener('click', (e) => handleGenericActions(e, 'analistas_credito', openAnalystModal, 'analista'));
+        }
+
+        function openAnalystModal(analystId = null) {
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modal-content');
+            const action = analystId ? 'Editar' : 'Añadir';
+            modalContent.innerHTML = `
+                <div class="p-6"><h3 class="text-xl font-semibold mb-4">${action} Analista</h3>
+                <form id="data-form" class="space-y-4">
+                    <input type="hidden" id="entity-id" value="${analystId || ''}">
+                    <div><label>Nombre Completo</label><input id="nombre_completo" required class="input-style"></div>
+                    <div><label>Correo Electrónico</label><input id="correo" type="email" required class="input-style"></div>
+                    <div><label>Teléfono</label><input id="telefono" maxlength="9" class="input-style"></div>
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" class="modal-cancel bg-gray-200 hover:bg-gray-300 py-2 px-4 rounded-lg animated-button">Cancelar</button>
+                        <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded-lg animated-button">${action}</button>
+                    </div>
+                </form></div>`.replaceAll('class="input-style"', 'class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"');
+            
+            modal.classList.remove('hidden');
+
+            if (analystId) {
+                getDoc(doc(db, "analistas_credito", analystId)).then(docSnap => {
+                    if (docSnap.exists()) {
+                        const d = docSnap.data();
+                        document.getElementById('nombre_completo').value = d.nombre_completo;
+                        document.getElementById('correo').value = d.correo;
+                        document.getElementById('telefono').value = d.telefono;
+                    }
+                });
+            }
+            document.querySelector('.modal-cancel').addEventListener('click', () => modal.classList.add('hidden'));
+            document.getElementById('data-form').addEventListener('submit', (e) => saveAnalyst(e));
+        }
+
+        async function saveAnalyst(e) {
+            e.preventDefault();
+            const id = document.getElementById('entity-id').value;
+            const data = {
+                nombre_completo: document.getElementById('nombre_completo').value,
+                correo: document.getElementById('correo').value,
+                telefono: document.getElementById('telefono').value
+            };
+            await saveGeneric('analistas_credito', data, id);
+        }
+        
+        // =================================================================================
+        // LÓGICA GENÉRICA PARA ACCIONES (EDITAR/ELIMINAR) Y GUARDADO
+        // =================================================================================
+        function handleGenericActions(e, collectionName, openModalFn, entityName) {
+            const target = e.target.closest('button');
+            if (!target) return;
+            const id = target.dataset.id;
+            if (target.classList.contains('edit-btn')) {
+                openModalFn(id);
+            }
+            if (target.classList.contains('delete-btn')) {
+                showConfirmationModal(
+                    `Eliminar ${entityName}`,
+                    `¿Estás seguro de que quieres eliminar este ${entityName}? Esta acción no se puede deshacer.`,
+                    () => deleteGeneric(collectionName, id, entityName)
+                );
+            }
+        }
+
+        async function saveGeneric(collectionName, data, id) {
+            try {
+                if (id) {
+                    await updateDoc(doc(db, collectionName, id), data);
+                } else {
+                    await addDoc(collection(db, collectionName), data);
+                }
+                document.getElementById('modal').classList.add('hidden');
+            } catch (error) {
+                console.error(`Error guardando ${collectionName}:`, error);
+                alert(`Error al guardar.`);
+            }
+        }
+
+        async function deleteGeneric(collectionName, id, entityName) {
+            try {
+                await deleteDoc(doc(db, collectionName, id));
+            } catch (error) {
+                console.error(`Error eliminando ${entityName}:`, error);
+                alert(`Error al eliminar.`);
+            }
+        }
+    </script>
+</body>
+</html>
